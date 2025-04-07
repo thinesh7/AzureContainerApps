@@ -1,0 +1,50 @@
+name: Deploy to Azure Container Apps
+
+on:
+  push:
+    branches:
+      - master  # Trigger the workflow on push to the master branch
+
+jobs:
+  git-commit-info:
+    runs-on: ubuntu-latest
+    environment: master
+    outputs:
+      commit_id: ${{ steps.set-commit-id.outputs.commit_id }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+
+      - name: Set Commit ID for Tagging
+        id: set-commit-id
+        run: echo "::set-output name=commit_id::${GITHUB_SHA::7}"
+
+  deploy-thinesh-app:
+    needs: [git-commit-info]
+    runs-on: ubuntu-latest
+    environment: master
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy Thinesh Application to Container App
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          appSourcePath: ${{ github.workspace }}
+          acrName: acrpcsregistry
+          acrUsername: acrpcsregistry
+          acrPassword: B/mt1Li2bYPcpq2Hdp6DvBptZyibpAR6cZ2xtovbIc+ACRCNZ/WH
+          containerAppName: aca-identity-service
+          containerAppEnvironment: managedEnvironment-PCSODCTEMP-81bc
+          resourceGroup: PCS-ODC-TEMP
+          imageToBuild: acrpcsregistry.azurecr.io/thineshApp:${{ needs.git-commit-info.outputs.commit_id }}
+          dockerfilePath: ./Dockerfile
