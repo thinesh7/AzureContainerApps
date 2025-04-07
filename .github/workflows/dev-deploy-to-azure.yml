@@ -40,8 +40,8 @@ jobs:
         uses: azure/container-apps-deploy-action@v1
         with:
           appSourcePath: ${{ github.workspace }}
-          acrName: acrpcsregistry
-          acrUsername: acrpcsregistry
+          acrName: ${{ secrets.DOCKER_USERNAME }}
+          acrUsername: ${{ secrets.DOCKER_PASSWORD }}
           acrPassword: B/mt1Li2bYPcpq2Hdp6DvBptZyibpAR6cZ2xtovbIc+ACRCNZ/WH
           containerAppName: aca-identity-service
           containerAppEnvironment: managedEnvironment-PCSODCTEMP-81bc
