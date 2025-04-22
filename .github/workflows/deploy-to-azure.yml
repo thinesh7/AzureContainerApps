@@ -1,7 +1,9 @@
 name: Log Key Vault Secrets
 
 on:
-  workflow_dispatch: # manual trigger
+  push:
+    branches:
+      - develop
 
 jobs:
   log-secrets:
